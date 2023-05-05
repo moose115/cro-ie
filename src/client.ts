@@ -12,7 +12,7 @@ const COMPANY_SEARCH_URL = 'http://services.cro.ie/cws/companies';
 const defaultFetcher: Fetcher<any> = (url, token) =>
   fetch(url, {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Basic ${token}`,
     },
   }).then((res) => res.json());
 
