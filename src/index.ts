@@ -1,1 +1,1 @@
-console.log("hello");
+export { default as CROClient } from './client';
