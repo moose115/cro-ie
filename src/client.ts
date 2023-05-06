@@ -38,14 +38,14 @@ class CROClient {
   companySearch: SearchFunction = async (params) => {
     const url = new URL(COMPANY_SEARCH_URL);
 
-    if ('companyName' in params)
-      url.searchParams.set('company_name', params.companyName);
     if ('companyNum' in params)
       url.searchParams.set('company_num', params.companyNum);
+    if ('companyName' in params)
+      url.searchParams.set('company_name', params.companyName);
+    else url.searchParams.set('alpha', params.alpha || '');
 
-    url.searchParams.set('alpha', params.alpha || '');
     url.searchParams.set('company_bus_ind', params.companyBusInd || '');
-    url.searchParams.set('search_type', params.searchType || '');
+    url.searchParams.set('search_type', params.searchType?.toString() || '');
     url.searchParams.set('adress', params.adress || '');
     url.searchParams.set('skip', params.skip?.toString() || '');
     url.searchParams.set('max', params.max?.toString() || '');
