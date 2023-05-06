@@ -11,8 +11,6 @@ type CROClientParams = {
   fetcher?: Fetcher;
 };
 
-const COMPANY_SEARCH_URL = 'http://services.cro.ie/cws/companies';
-
 const defaultFetcher: Fetcher = (url, token) =>
   fetch(url, {
     headers: {
@@ -36,6 +34,7 @@ class CROClient {
   }
 
   companySearch: SearchFunction = async (params) => {
+    const COMPANY_SEARCH_URL = 'http://services.cro.ie/cws/companies';
     const url = new URL(COMPANY_SEARCH_URL);
 
     if ('companyNum' in params)
@@ -51,9 +50,9 @@ class CROClient {
     url.searchParams.set('max', params.max?.toString() || '');
     url.searchParams.set('sort_by', params.sortBy || '');
     url.searchParams.set('sort_dir', params.sortDir || '');
-    url.searchParams.set('html_enc', params.htmlEnc || '');
+    url.searchParams.set('htmlEnc', params.htmlEnc || '');
 
-    url.searchParams.set('format', 'json');
+    url.searchParams.set('format', params.format || 'json');
 
     try {
       const { data, status } = await this.fetcher<Company[]>(
@@ -62,6 +61,27 @@ class CROClient {
       );
       if (status === 200) {
         return data || [];
+      } else {
+        throw new Error(`CRO API returned status ${status}`);
+      }
+    } catch (err) {
+      throw new Error(`CRO API returned error: ${err.message}`);
+    }
+  };
+
+  getCompany = async (
+    companyNum: string,
+    company_bus_ind: 'b' | 'c',
+    htmlEnc: 0 | 1 = 0
+  ) => {
+    const COMPANY_URL = `http://services.cro.ie/cws/company/${companyNum}/${company_bus_ind}?format=json&htmlEnc=${htmlEnc}`;
+    try {
+      const { data, status } = await this.fetcher<Company>(
+        COMPANY_URL,
+        this.token
+      );
+      if (status === 200) {
+        return data;
       } else {
         throw new Error(`CRO API returned status ${status}`);
       }
